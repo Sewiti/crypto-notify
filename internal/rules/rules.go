@@ -12,7 +12,7 @@ type Rules []Rule
 
 // Rule that triggers based on crypto price
 type Rule struct {
-	CryptoID  string  `json:"crypto_id"`
+	CryptoID  int     `json:"crypto_id"`
 	Price     float64 `json:"price"`
 	Operator  string  `json:"rule"`
 	Triggered bool    `json:"triggered"`

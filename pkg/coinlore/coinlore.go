@@ -5,45 +5,44 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"time"
 )
 
 const baseURL = "https://api.coinlore.net/api"
 
-// Coin information
-type Coin struct {
-	ID               string `json:"id"`
-	Symbol           string `json:"symbol"`
-	Name             string `json:"name"`
-	NameID           string `json:"nameid"`
-	Rank             int    `json:"rank"`
-	PriceUSD         string `json:"price_usd"`
-	PercentChange24h string `json:"percent_change_24h"`
-	PercentChange1h  string `json:"percent_change_1h"`
-	PercentChange7d  string `json:"percent_change_7d"`
-	MarketCapUSD     string `json:"market_cap_usd"`
-	Volume24         string `json:"volume24"`
-	Volume24Native   string `json:"volume24_native"`
-	CSupply          string `json:"csupply"`
-	PriceBTC         string `json:"price_btc"`
-	TSupply          string `json:"tsupply"`
-	MSupply          string `json:"msupply"`
+// Client is a coinlore API client
+type Client interface {
+	GetCoin(context.Context, int) (Coin, error)
 }
 
-// GetCoin information
-func GetCoin(ctx context.Context, id string) (coin Coin, err error) {
-	url := fmt.Sprintf(baseURL+"/ticker/?id=%s", id)
+type client struct {
+	httpClient *http.Client
+}
 
-	req, err := http.NewRequest(http.MethodGet, url, nil)
-	if err != nil {
-		return coin, err
+// NewClient returns a new coinlore API client
+func NewClient(timeout time.Duration) Client {
+	return &client{
+		httpClient: &http.Client{
+			Timeout: timeout,
+		},
 	}
-	req = req.WithContext(ctx)
+}
 
-	res, err := http.DefaultClient.Do(req)
+func (c *client) sendRequest(req *http.Request, val interface{}) error {
+	req.Header.Set("Content-Type", "application/json; charset=utf-8")
+	req.Header.Set("Accept", "application/json; charset=utf-8")
+
+	res, err := c.httpClient.Do(req)
 	if err != nil {
-		return coin, err
+		return err
 	}
 
-	err = json.NewDecoder(res.Body).Decode(&coin)
-	return coin, err
+	defer res.Body.Close()
+
+	if res.StatusCode < 200 || res.StatusCode >= 400 {
+		// Decode error JSON?
+		return fmt.Errorf("request %s: received %d status code", req.URL, res.StatusCode)
+	}
+
+	return json.NewDecoder(res.Body).Decode(&val)
 }

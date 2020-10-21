@@ -6,9 +6,6 @@ import (
 	"log"
 	"os"
 	"os/signal"
-	"strconv"
-	"strings"
-	"sync"
 	"syscall"
 	"time"
 
@@ -16,12 +13,13 @@ import (
 	"github.com/Sewiti/crypto-notify/pkg/coinlore"
 )
 
-const rulesFilePath = "./data/rules-set-1.json"
-const interval = 3 * time.Second
+const (
+	rulesFilePath = "./data/rules-set-2.json"
+	interval      = 30 * time.Second
+)
 
 func main() {
-	ctx := context.Background()
-	ctx, cancel := context.WithCancel(ctx)
+	ctx, cancel := context.WithCancel(context.Background())
 
 	go setupSignal(cancel)
 
@@ -34,7 +32,7 @@ Main:
 			break Main
 
 		case <-ticker.C:
-			checkRules(ctx)
+			tick(ctx)
 		}
 	}
 }
@@ -44,86 +42,65 @@ func setupSignal(onReceived func()) {
 	signal.Notify(sig, syscall.SIGINT, syscall.SIGTERM, syscall.SIGKILL)
 
 	<-sig
+	log.Println("exiting")
 	onReceived()
 }
 
-func checkRules(parent context.Context) {
-	r, err := rules.Read(rulesFilePath)
+func tick(ctx context.Context) {
+	rul, err := rules.Read(rulesFilePath)
 	if err != nil {
 		log.Println(err)
 		return
 	}
 
-	ctx, cancel := context.WithTimeout(parent, interval)
-	defer cancel()
+	rul = filter(rul)
+	coins := distinct(rul) // In order to avoid duplicate requests
 
-	trig := false // Any triggered
-	wg := &sync.WaitGroup{}
-	wg.Add(len(r))
+	coinsMap, err := fetch(ctx, coins)
+	if err != nil {
+		log.Println(err)
+		return
+	}
 
-	for i := range r {
-		go foreach(ctx, &r[i], wg, &trig)
+	trig, err := check(&rul, coinsMap)
+	if err != nil {
+		log.Println(err)
+		return
 	}
 
 	if trig {
-		rules.Write(rulesFilePath, r)
-	}
-}
-
-func foreach(ctx context.Context, rule *rules.Rule, wg *sync.WaitGroup, trig *bool) {
-	defer wg.Done()
-
-	coin, err := coinlore.GetCoin(ctx, rule.CryptoID)
-	if err != nil {
-		log.Println(err)
-		return
-	}
-
-	price, err := strconv.ParseFloat(coin.PriceUSD, 64)
-	if err != nil {
-		log.Println(err)
-		return
-	}
-
-	rTrig, err := rule.Check(price)
-	if err != nil {
-		log.Println(err)
-		return
-	}
-
-	if rTrig {
-		op, err := formatOperator(rule.Operator)
+		err = rules.Write(rulesFilePath, rul)
 		if err != nil {
 			log.Println(err)
 			return
 		}
-
-		fmt.Printf("%s id:%s price is %s %s\n", coin.Name, coin.ID, op, coin.PriceUSD)
-		*trig = true
 	}
 }
 
-func formatOperator(operator string) (string, error) {
-	switch strings.ToLower(operator) {
-	case "lt":
-		return "less than", nil
+func check(r *rules.Rules, cm map[int]coinlore.Coin) (anyTrig bool, err error) {
+	for i, v := range *r {
+		coin, ok := cm[v.CryptoID]
+		if !ok {
+			return false, fmt.Errorf("coinmap %d: index not found", v.CryptoID)
+		}
 
-	case "le":
-		return "less than or equals", nil
+		ruleTr, err := v.Check(coin.PriceUSD)
+		if err != nil {
+			return false, err
+		}
 
-	case "gt":
-		return "greater than", nil
+		if ruleTr {
+			op, err := formatOp(v.Operator)
+			if err != nil {
+				// Should never enter here due to rule.Check
+				return false, err
+			}
 
-	case "ge":
-		return "greater than or equals", nil
-
-	case "eq":
-		return "equals", nil
-
-	case "ne":
-		return "not equals", nil
-
-	default:
-		return "", fmt.Errorf("format %s: invalid operator", operator)
+			log.Printf("%s (%d) price is %s %.2f\n", coin.Name, coin.ID, op, v.Price)
+			(*r)[i].Triggered = true
+			anyTrig = true
+		}
 	}
+
+	return anyTrig, nil
 }
