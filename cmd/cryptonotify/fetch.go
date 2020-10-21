@@ -40,8 +40,10 @@ func fetch(ctx context.Context, ids []int) (map[int]coinlore.Coin, error) {
 		make(map[int]coinlore.Coin),
 	}
 
+	cl := coinlore.NewClient(reqTimeout)
+
 	for i := 0; i < n; i++ {
-		go caller(ctx, jobs, &wg, &res)
+		go caller(ctx, cl, jobs, &wg, &res)
 	}
 
 	for _, v := range ids {
@@ -60,8 +62,7 @@ func fetch(ctx context.Context, ids []int) (map[int]coinlore.Coin, error) {
 	}
 }
 
-func caller(ctx context.Context, calls <-chan int, wg *sync.WaitGroup, cm *coinMap) {
-	cl := coinlore.NewClient(reqTimeout) // Should client be an arg?
+func caller(ctx context.Context, cl coinlore.Client, calls <-chan int, wg *sync.WaitGroup, cm *coinMap) {
 	defer wg.Done()
 
 	for id := range calls {

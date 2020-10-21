@@ -12,20 +12,21 @@ type Rules []Rule
 
 // Rule that triggers based on crypto price
 type Rule struct {
-	CryptoID  int     `json:"crypto_id"`
-	Price     float64 `json:"price"`
-	Operator  string  `json:"rule"`
-	Triggered bool    `json:"triggered"`
+	CryptoID  int     `json:"crypto_id"` // Cryptocurrency ID
+	Price     float64 `json:"price"`     // Price to which rule is compared to in order to trigger
+	Operator  string  `json:"rule"`      // Operator by which rule is compared to the price in order to trigger
+	Triggered bool    `json:"triggered"` // Was rule triggered
 }
 
 // Read rules from a JSON file
-func Read(fileName string) (rules Rules, err error) {
-	file, err := os.Open(fileName)
+func Read(name string) (Rules, error) {
+	file, err := os.Open(name)
 	if err != nil {
 		return nil, err
 	}
 	defer file.Close()
 
+	rules := Rules{}
 	err = json.NewDecoder(file).Decode(&rules)
 	if err != nil {
 		return nil, err
@@ -35,38 +36,48 @@ func Read(fileName string) (rules Rules, err error) {
 }
 
 // Write rules to a JSON file
-func Write(fileName string, rules Rules) error {
-	file, err := os.OpenFile(fileName, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0644)
+func Write(name string, r Rules) error {
+	file, err := os.OpenFile(name, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0644)
 	if err != nil {
 		return err
 	}
 	defer file.Close()
 
-	return json.NewEncoder(file).Encode(rules)
+	return json.NewEncoder(file).Encode(r)
 }
 
-// Check if price triggers this rule
+// Check checks if price triggers this rule and updates it accordingly. Returns an error if rule was already triggered.
 func (r *Rule) Check(price float64) (bool, error) {
+	if r.Triggered {
+		return false, fmt.Errorf("check: rule has already been triggered")
+	}
+
+	var trig bool
+
 	switch strings.ToLower(r.Operator) {
 	case "lt":
-		return price < r.Price, nil
+		trig = price < r.Price
 
 	case "le":
-		return price <= r.Price, nil
+		trig = price <= r.Price
 
 	case "gt":
-		return price > r.Price, nil
+		trig = price > r.Price
 
 	case "ge":
-		return price >= r.Price, nil
+		trig = price >= r.Price
 
 	case "eq":
-		return price == r.Price, nil
+		trig = price == r.Price
 
 	case "ne":
-		return price != r.Price, nil
+		trig = price != r.Price
 
 	default:
 		return false, fmt.Errorf("check %s: invalid operator", r.Operator)
 	}
+
+	r.Triggered = trig
+
+	return trig, nil
 }

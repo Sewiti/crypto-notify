@@ -14,14 +14,14 @@ import (
 )
 
 const (
-	rulesFilePath = "./data/rules-set-2.json"
-	interval      = 30 * time.Second
+	rulesFile = "data/rules-set-2.json"
+	interval  = 30 * time.Second
 )
 
 func main() {
 	ctx, cancel := context.WithCancel(context.Background())
 
-	go setupSignal(cancel)
+	go waitSignal(cancel)
 
 	ticker := time.NewTicker(interval)
 
@@ -32,12 +32,12 @@ Main:
 			break Main
 
 		case <-ticker.C:
-			tick(ctx)
+			tick(ctx, rulesFile)
 		}
 	}
 }
 
-func setupSignal(onReceived func()) {
+func waitSignal(onReceived func()) {
 	sig := make(chan os.Signal)
 	signal.Notify(sig, syscall.SIGINT, syscall.SIGTERM, syscall.SIGKILL)
 
@@ -46,7 +46,7 @@ func setupSignal(onReceived func()) {
 	onReceived()
 }
 
-func tick(ctx context.Context) {
+func tick(ctx context.Context, rulesFilePath string) {
 	rul, err := rules.Read(rulesFilePath)
 	if err != nil {
 		log.Println(err)
@@ -78,18 +78,18 @@ func tick(ctx context.Context) {
 }
 
 func check(r *rules.Rules, cm map[int]coinlore.Coin) (anyTrig bool, err error) {
-	for i, v := range *r {
+	for _, v := range *r {
 		coin, ok := cm[v.CryptoID]
 		if !ok {
 			return false, fmt.Errorf("coinmap %d: index not found", v.CryptoID)
 		}
 
-		ruleTr, err := v.Check(coin.PriceUSD)
+		trig, err := v.Check(coin.PriceUSD)
 		if err != nil {
 			return false, err
 		}
 
-		if ruleTr {
+		if trig {
 			op, err := formatOp(v.Operator)
 			if err != nil {
 				// Should never enter here due to rule.Check
@@ -97,7 +97,6 @@ func check(r *rules.Rules, cm map[int]coinlore.Coin) (anyTrig bool, err error) {
 			}
 
 			log.Printf("%s (%d) price is %s %.2f\n", coin.Name, coin.ID, op, v.Price)
-			(*r)[i].Triggered = true
 			anyTrig = true
 		}
 	}
