@@ -2,7 +2,7 @@ package coinlore
 
 import "strconv"
 
-// parse API response with proper numeric variables, zero values if a field is an empty string.
+// parse API response with proper numeric variables, zero values if a field is an empty string or null?.
 func parse(rc rawCoin) (Coin, error) {
 	c := Coin{}
 	var err error
@@ -75,9 +75,9 @@ func parse(rc rawCoin) (Coin, error) {
 	return c, nil
 }
 
-// parseInt parses a string as int, returns zero value if string is empty.
+// parseInt parses a string as int, returns zero value if string is empty or null?.
 func parseInt(str string) (int, error) {
-	if str == "" {
+	if str == "" || str == "0?" {
 		return 0, nil
 	}
 
@@ -86,18 +86,18 @@ func parseInt(str string) (int, error) {
 	return int(v), err
 }
 
-// parseInt64 parses a string as int64, returns zero value if string is empty.
+// parseInt64 parses a string as int64, returns zero value if string is empty or null?.
 func parseInt64(str string) (int64, error) {
-	if str == "" {
+	if str == "" || str == "0?" {
 		return 0, nil
 	}
 
 	return strconv.ParseInt(str, 10, 64)
 }
 
-// parseFloat64 parses a string as float64, returns zero value if string is empty.
+// parseFloat64 parses a string as float64, returns zero value if string is empty or null?.
 func parseFloat64(str string) (float64, error) {
-	if str == "" {
+	if str == "" || str == "0?" {
 		return 0, nil
 	}
 

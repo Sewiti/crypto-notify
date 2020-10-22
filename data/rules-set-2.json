@@ -73,5 +73,10 @@
         "crypto_id": 2,
         "price": 0.003,
         "rule": "lt"
+    },
+    {
+        "crypto_id": 91,
+        "price": 1,
+        "rule": "lt"
     }
 ]
