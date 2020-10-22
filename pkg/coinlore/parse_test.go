@@ -43,7 +43,7 @@ func TestParse(t *testing.T) {
 		c.PriceBTC != 1.0 ||
 		c.TSupply != 18495577 ||
 		c.MSupply != 21000000 {
-		t.Fatal("Unexpected values")
+		t.Fatal("Unexpected values received")
 	}
 }
 
@@ -88,6 +88,6 @@ func TestParseWithEmptyValues(t *testing.T) {
 		c.PriceBTC != 2.15e-7 ||
 		c.TSupply != 0 ||
 		c.MSupply != 0 {
-		t.Fatal("Unexpected values")
+		t.Fatal("Unexpected values received")
 	}
 }

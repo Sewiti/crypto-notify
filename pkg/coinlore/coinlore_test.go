@@ -21,7 +21,7 @@ func TestGetCoin(t *testing.T) {
 		c.Name != "Bitcoin" ||
 		c.NameID != "bitcoin" ||
 		c.PriceBTC != 1 {
-		t.Fatal("Unexpected values")
+		t.Fatal("Unexpected values received")
 	}
 }
 

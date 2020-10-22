@@ -6,7 +6,7 @@ import (
 	"github.com/Sewiti/crypto-notify/internal/rules"
 )
 
-// filter filters out already triggered rules and returns a filtered rules set
+// filter filters out already triggered rules and returns a filtered rules set.
 func filter(r rules.Rules) rules.Rules {
 	filt := rules.Rules{}
 
@@ -19,7 +19,7 @@ func filter(r rules.Rules) rules.Rules {
 	return filt
 }
 
-// distinct filters out duplicate coins from rules set and returns unique coins slice
+// distinct filters out duplicate coins from rules set and returns unique coins slice.
 func distinct(r rules.Rules) (coins []int) {
 	var all []int // Coins
 

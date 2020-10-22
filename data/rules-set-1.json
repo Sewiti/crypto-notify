@@ -6,7 +6,7 @@
     },
     {
         "crypto_id": 90,
-        "price": 3900.00,
+        "price": 3900,
         "rule": "gt"
     }
 ]

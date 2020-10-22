@@ -2,7 +2,8 @@
     {
         "crypto_id": 5,
         "price": 3470.98,
-        "rule": "lt"
+        "rule": "lt",
+        "triggered": false
     },
     {
         "crypto_id": 48,
@@ -12,7 +13,8 @@
     {
         "crypto_id": 48,
         "price": 9587.57,
-        "rule": "eq"
+        "rule": "eq",
+        "triggered": true
     },
     {
         "crypto_id": 85,
@@ -22,7 +24,8 @@
     {
         "crypto_id": 925,
         "price": 45826.57,
-        "rule": "ge"
+        "rule": "ge",
+        "triggered": true
     },
     {
         "crypto_id": 123,

@@ -10,7 +10,7 @@ import (
 
 const baseURL = "https://api.coinlore.net/api"
 
-// Client is a coinlore API client
+// Client is a Coinlore API client.
 type Client interface {
 	GetCoin(context.Context, int) (Coin, error)
 }
@@ -19,7 +19,7 @@ type client struct {
 	httpClient *http.Client
 }
 
-// NewClient returns a new coinlore API client
+// NewClient returns a new Coinlore API client.
 func NewClient(timeout time.Duration) Client {
 	return &client{
 		httpClient: &http.Client{
@@ -28,6 +28,7 @@ func NewClient(timeout time.Duration) Client {
 	}
 }
 
+// sendRequest wraps a request, adds necessary headers, calls it and decodes JSON response as val interface.
 func (c *client) sendRequest(req *http.Request, val interface{}) error {
 	req.Header.Set("Content-Type", "application/json; charset=utf-8")
 	req.Header.Set("Accept", "application/json; charset=utf-8")

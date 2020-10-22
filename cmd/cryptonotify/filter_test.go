@@ -72,7 +72,7 @@ func TestTableDistinct(t *testing.T) {
 
 		for _, v := range c {
 			if _, exists := m[v]; exists {
-				t.Fatal("Returned slice has duplicating values")
+				t.Fatalf("Returned slice has duplicating values: %d", v)
 			} else {
 				m[v] = struct{}{}
 			}

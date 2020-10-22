@@ -6,7 +6,7 @@ import (
 	"net/http"
 )
 
-// Coin contains information about a cryptocurrency
+// Coin contains available information about a cryptocurrency, returned by an API.
 type Coin struct {
 	ID               int
 	Symbol           string
@@ -26,7 +26,7 @@ type Coin struct {
 	MSupply          int64
 }
 
-// rawCoin is a structure that the API responds with
+// rawCoin is a raw structure that the API responds with.
 type rawCoin struct {
 	ID               string `json:"id"`
 	Symbol           string `json:"symbol"`
@@ -46,7 +46,7 @@ type rawCoin struct {
 	MSupply          string `json:"msupply"`
 }
 
-// GetCoin sends a request to the api for coin's information
+// GetCoin sends a request to the api for coin's information.
 func (c *client) GetCoin(ctx context.Context, id int) (Coin, error) {
 	url := fmt.Sprintf(baseURL+"/ticker/?id=%d", id)
 

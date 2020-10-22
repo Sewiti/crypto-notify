@@ -7,15 +7,15 @@ import (
 	"strings"
 )
 
-// Rules set that triggers based on crypto price
+// Rules set that triggers based on crypto price.
 type Rules []Rule
 
-// Rule that triggers based on crypto price
+// Rule that triggers based on crypto price.
 type Rule struct {
-	CryptoID  int     `json:"crypto_id"` // Cryptocurrency ID
-	Price     float64 `json:"price"`     // Price to which rule is compared to in order to trigger
-	Op        string  `json:"rule"`      // Operator by which rule is compared to the price in order to trigger
-	Triggered bool    `json:"triggered"` // Was rule triggered
+	CryptoID  int     `json:"crypto_id"` // Cryptocurrency ID.
+	Price     float64 `json:"price"`     // Price to which rule is compared to in order to trigger.
+	Op        string  `json:"rule"`      // Operator by which rule is compared to the price in order to trigger.
+	Triggered bool    `json:"triggered"` // Was rule triggered.
 }
 
 // Read rules from a JSON file
@@ -35,7 +35,7 @@ func Read(name string) (Rules, error) {
 	return rules, err
 }
 
-// Write rules to a JSON file
+// Write rules to a JSON file.
 func Write(name string, r Rules) error {
 	file, err := os.OpenFile(name, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0644)
 	if err != nil {
@@ -82,7 +82,7 @@ func (r *Rule) Check(price float64) (bool, error) {
 	return trig, nil
 }
 
-// String returns rule formatted as a string: <id> price is <operator> <price>
+// String returns rule formatted as a string in a readable format: <id> price is <operator> <price>
 func (r *Rule) String() string {
 	var op string
 

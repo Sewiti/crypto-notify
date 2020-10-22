@@ -101,7 +101,7 @@ func TestTableCheck(t *testing.T) {
 
 		trig, err := r.Check(test.input)
 		if err != nil {
-			t.Fatal("Unexpected error")
+			t.Fatal(err)
 		}
 
 		if trig != test.expected {

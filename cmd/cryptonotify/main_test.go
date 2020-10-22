@@ -29,7 +29,7 @@ func TestIntegration(t *testing.T) {
 	}
 }
 
-// prepareFile resets rules triggers and writes it to a temporary file
+// prepareFile resets rules triggers and writes it to a temporary file.
 func prepareFile(t *testing.T, r rules.Rules) (temp *os.File) {
 	re := make([]rules.Rule, len(r))
 	copy(re, r)
