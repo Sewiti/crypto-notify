@@ -14,7 +14,7 @@ type Rules []Rule
 type Rule struct {
 	CryptoID  int     `json:"crypto_id"` // Cryptocurrency ID
 	Price     float64 `json:"price"`     // Price to which rule is compared to in order to trigger
-	Operator  string  `json:"rule"`      // Operator by which rule is compared to the price in order to trigger
+	Op        string  `json:"rule"`      // Operator by which rule is compared to the price in order to trigger
 	Triggered bool    `json:"triggered"` // Was rule triggered
 }
 
@@ -54,7 +54,7 @@ func (r *Rule) Check(price float64) (bool, error) {
 
 	var trig bool
 
-	switch strings.ToLower(r.Operator) {
+	switch strings.ToLower(r.Op) {
 	case "lt":
 		trig = price < r.Price
 
@@ -74,10 +74,40 @@ func (r *Rule) Check(price float64) (bool, error) {
 		trig = price != r.Price
 
 	default:
-		return false, fmt.Errorf("check %s: invalid operator", r.Operator)
+		return false, fmt.Errorf("check %s: invalid operator", r.Op)
 	}
 
 	r.Triggered = trig
 
 	return trig, nil
+}
+
+// String returns rule formatted as a string: <id> price is <operator> <price>
+func (r *Rule) String() string {
+	var op string
+
+	switch strings.ToLower(r.Op) {
+	case "lt":
+		op = "less than"
+
+	case "le":
+		op = "less than or equals"
+
+	case "gt":
+		op = "greater than"
+
+	case "ge":
+		op = "greater than or equals"
+
+	case "eq":
+		op = "equals"
+
+	case "ne":
+		op = "not equals"
+
+	default:
+		op = "<invalid_operator>"
+	}
+
+	return fmt.Sprintf("%d price is %s %f", r.CryptoID, op, r.Price)
 }

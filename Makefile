@@ -5,9 +5,9 @@ run:
 	go run ./cmd/cryptonotify
 
 test:
-	go test ./cmd/cryptonotify
 	go test ./internal/rules
 	go test ./pkg/coinlore
+	go test ./cmd/cryptonotify
 
 compile:
 	# Linux 64-bit

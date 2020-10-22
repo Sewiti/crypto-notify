@@ -1,0 +1,14 @@
+[
+    {
+        "crypto_id": 90,
+        "price": 3470.98,
+        "rule": "lt",
+        "triggered": false
+    },
+    {
+        "crypto_id": 90,
+        "price": 3900.00,
+        "rule": "gt",
+        "triggered": true
+    }
+]

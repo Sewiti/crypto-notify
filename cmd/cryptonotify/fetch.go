@@ -14,17 +14,25 @@ const (
 	reqTimeout           = 30 * time.Second
 )
 
-// coinMap is an internal mutex protected type used for results accumulation
-type coinMap struct {
-	mu sync.Mutex
-	cm map[int]coinlore.Coin
+// monitor is an internal mutex protected type used for results accumulation
+type monitor struct {
+	mu   sync.Mutex
+	cm   map[int]coinlore.Coin
+	errs []error
 }
 
-func (cm *coinMap) add(c coinlore.Coin) {
-	cm.mu.Lock()
-	defer cm.mu.Unlock()
+func (m *monitor) add(c coinlore.Coin) {
+	m.mu.Lock()
+	defer m.mu.Unlock()
 
-	cm.cm[c.ID] = c
+	m.cm[c.ID] = c
+}
+
+func (m *monitor) err(err error) {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+
+	m.errs = append(m.errs, err)
 }
 
 func fetch(ctx context.Context, ids []int) (map[int]coinlore.Coin, error) {
@@ -35,15 +43,15 @@ func fetch(ctx context.Context, ids []int) (map[int]coinlore.Coin, error) {
 	wg.Add(n)
 
 	jobs := make(chan int, n)
-	res := coinMap{
-		sync.Mutex{},
-		make(map[int]coinlore.Coin),
+	mon := monitor{
+		mu: sync.Mutex{},
+		cm: make(map[int]coinlore.Coin),
 	}
 
 	cl := coinlore.NewClient(reqTimeout)
 
 	for i := 0; i < n; i++ {
-		go caller(ctx, cl, jobs, &wg, &res)
+		go caller(ctx, cl, jobs, &wg, &mon)
 	}
 
 	for _, v := range ids {
@@ -58,19 +66,24 @@ func fetch(ctx context.Context, ids []int) (map[int]coinlore.Coin, error) {
 		return nil, ctx.Err()
 
 	default:
-		return res.cm, nil
+		for _, v := range mon.errs {
+			return nil, v
+		}
+
+		return mon.cm, nil
 	}
 }
 
-func caller(ctx context.Context, cl coinlore.Client, calls <-chan int, wg *sync.WaitGroup, cm *coinMap) {
+func caller(ctx context.Context, cl coinlore.Client, calls <-chan int, wg *sync.WaitGroup, mon *monitor) {
 	defer wg.Done()
 
 	for id := range calls {
 		coin, err := cl.GetCoin(ctx, id)
 		if err != nil {
+			mon.err(err)
 			return
 		}
 
-		cm.add(coin)
+		mon.add(coin)
 	}
 }

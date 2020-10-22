@@ -13,7 +13,7 @@ func TestGetCoin(t *testing.T) {
 	cl := NewClient(30 * time.Second)
 	c, err := cl.GetCoin(ctx, 90) // Bitcoin
 	if err != nil {
-		t.Fatal("Expected client to complete API request")
+		t.Fatal(err)
 	}
 
 	if c.ID != 90 ||

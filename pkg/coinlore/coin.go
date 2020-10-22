@@ -47,21 +47,20 @@ type rawCoin struct {
 }
 
 // GetCoin sends a request to the api for coin's information
-func (c *client) GetCoin(ctx context.Context, id int) (coin Coin, err error) {
+func (c *client) GetCoin(ctx context.Context, id int) (Coin, error) {
 	url := fmt.Sprintf(baseURL+"/ticker/?id=%d", id)
 
 	req, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
-		return coin, err
+		return Coin{}, err
 	}
 
 	req = req.WithContext(ctx)
 
 	var res []rawCoin
 	err = c.sendRequest(req, &res)
-
-	if len(res) == 0 {
-		return coin, fmt.Errorf("getcoin: result is empty, possible interruption")
+	if err != nil {
+		return Coin{}, err
 	}
 
 	return parse(res[0]) // Why do I have to parse this again?

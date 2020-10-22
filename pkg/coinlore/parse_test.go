@@ -24,7 +24,7 @@ func TestParse(t *testing.T) {
 
 	c, err := parse(rc)
 	if err != nil {
-		t.Fatal("Unexpected error")
+		t.Fatal(err)
 	}
 
 	if c.ID != 90 ||
@@ -43,6 +43,51 @@ func TestParse(t *testing.T) {
 		c.PriceBTC != 1.0 ||
 		c.TSupply != 18495577 ||
 		c.MSupply != 21000000 {
+		t.Fatal("Unexpected values")
+	}
+}
+
+func TestParseWithEmptyValues(t *testing.T) {
+	rc := rawCoin{
+		ID:               "2",
+		Symbol:           "DOGE",
+		Name:             "Dogecoin",
+		NameID:           "dogecoin",
+		Rank:             35,
+		PriceUSD:         "0.002646",
+		PercentChange24h: "1.10",
+		PercentChange1h:  "-0.17",
+		PercentChange7d:  "0.46",
+		MarketCapUSD:     "334065493.69",
+		Volume24:         "27400214.56",
+		Volume24Native:   "10354213518.91",
+		CSupply:          "126239356384.00",
+		PriceBTC:         "2.15E-7",
+		TSupply:          "",
+		MSupply:          "",
+	}
+
+	c, err := parse(rc)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if c.ID != 2 ||
+		c.Symbol != "DOGE" ||
+		c.Name != "Dogecoin" ||
+		c.NameID != "dogecoin" ||
+		c.Rank != 35 ||
+		c.PriceUSD != 0.002646 ||
+		c.PercentChange24h != 1.10 ||
+		c.PercentChange1h != -0.17 ||
+		c.PercentChange7d != 0.46 ||
+		c.MarketCapUSD != 334065493.69 ||
+		c.Volume24 != 27400214.56 ||
+		c.Volume24Native != 10354213518.91 ||
+		c.CSupply != 126239356384.00 ||
+		c.PriceBTC != 2.15e-7 ||
+		c.TSupply != 0 ||
+		c.MSupply != 0 {
 		t.Fatal("Unexpected values")
 	}
 }

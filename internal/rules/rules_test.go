@@ -15,24 +15,24 @@ const (
 func TestReadWrite(t *testing.T) {
 	rules, err := Read(testFile)
 	if err != nil {
-		t.Fatal("Unexpected error reading file")
+		t.Fatal(err)
 	}
 
-	tmpFile, err := ioutil.TempFile(os.TempDir(), "go-rule-test-*.json")
+	tmpFile, err := ioutil.TempFile(os.TempDir(), "cryptonotify_rule_test_*.json")
 	if err != nil {
-		t.Fatal("Couldn't create temporary file")
+		t.Fatal(err)
 	}
 
 	defer os.Remove(tmpFile.Name())
 
 	err = Write(tmpFile.Name(), rules)
 	if err != nil {
-		t.Fatal("Unexpected error writing file")
+		t.Fatal(err)
 	}
 
 	rules2, err := Read(tmpFile.Name())
 	if err != nil {
-		t.Fatal("Unexpected error reading file")
+		t.Fatal(err)
 	}
 
 	for i := range rules {
@@ -95,8 +95,8 @@ func TestTableCheck(t *testing.T) {
 
 	for _, test := range tests {
 		r := Rule{
-			Price:    test.target,
-			Operator: test.operator,
+			Price: test.target,
+			Op:    test.operator,
 		}
 
 		trig, err := r.Check(test.input)
@@ -105,7 +105,7 @@ func TestTableCheck(t *testing.T) {
 		}
 
 		if trig != test.expected {
-			t.Fatalf("%f %s %f returned %t, expected %t", test.input, strings.ToLower(r.Operator), r.Price, trig, test.expected)
+			t.Fatalf("%f %s %f returned %t, expected %t", test.input, strings.ToLower(r.Op), r.Price, trig, test.expected)
 		}
 	}
 }
