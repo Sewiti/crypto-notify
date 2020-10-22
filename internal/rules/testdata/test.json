@@ -1,0 +1,40 @@
+[
+    {
+        "crypto_id": 5,
+        "price": 3470.98,
+        "rule": "lt",
+        "triggered": false
+    },
+    {
+        "crypto_id": 48,
+        "price": 4853.25,
+        "rule": "gt"
+    },
+    {
+        "crypto_id": 48,
+        "price": 9587.57,
+        "rule": "eq",
+        "triggered": true
+    },
+    {
+        "crypto_id": 85,
+        "price": 254.69,
+        "rule": "le"
+    },
+    {
+        "crypto_id": 925,
+        "price": 45826.57,
+        "rule": "ge",
+        "triggered": true
+    },
+    {
+        "crypto_id": 123,
+        "price": 4875.25,
+        "rule": "ne"
+    },
+    {
+        "crypto_id": 15,
+        "price": 1578.25,
+        "rule": "lt"
+    }
+]

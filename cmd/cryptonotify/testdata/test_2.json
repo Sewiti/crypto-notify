@@ -1,0 +1,92 @@
+[
+    {
+        "crypto_id": 90,
+        "price": 20000,
+        "rule": "ge",
+        "triggered": false
+    },
+    {
+        "crypto_id": 90,
+        "price": 20000,
+        "rule": "le",
+        "triggered": true
+    },
+    {
+        "crypto_id": 90,
+        "price": 6000,
+        "rule": "gt",
+        "triggered": true
+    },
+    {
+        "crypto_id": 80,
+        "price": 800,
+        "rule": "ge",
+        "triggered": false
+    },
+    {
+        "crypto_id": 80,
+        "price": 800,
+        "rule": "lt",
+        "triggered": true
+    },
+    {
+        "crypto_id": 80,
+        "price": 200,
+        "rule": "gt",
+        "triggered": true
+    },
+    {
+        "crypto_id": 58,
+        "price": 1,
+        "rule": "ge",
+        "triggered": false
+    },
+    {
+        "crypto_id": 58,
+        "price": 0.1,
+        "rule": "le",
+        "triggered": false
+    },
+    {
+        "crypto_id": 518,
+        "price": 0.5,
+        "rule": "gt",
+        "triggered": true
+    },
+    {
+        "crypto_id": 518,
+        "price": 10,
+        "rule": "lt",
+        "triggered": true
+    },
+    {
+        "crypto_id": 1,
+        "price": 30,
+        "rule": "ge",
+        "triggered": true
+    },
+    {
+        "crypto_id": 1,
+        "price": 30,
+        "rule": "le",
+        "triggered": false
+    },
+    {
+        "crypto_id": 1,
+        "price": 40,
+        "rule": "gt",
+        "triggered": true
+    },
+    {
+        "crypto_id": 2,
+        "price": 0.1,
+        "rule": "ge",
+        "triggered": false
+    },
+    {
+        "crypto_id": 2,
+        "price": 0.1,
+        "rule": "lt",
+        "triggered": true
+    }
+]
