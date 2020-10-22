@@ -14,7 +14,7 @@ import (
 )
 
 const (
-	rulesFile = "data/rules-set-2.json"
+	rulesFile = "data/rules-set-1.json"
 	interval  = 30 * time.Second
 )
 
