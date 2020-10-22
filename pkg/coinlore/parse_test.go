@@ -91,3 +91,48 @@ func TestParseWithEmptyValues(t *testing.T) {
 		t.Fatal("Unexpected values received")
 	}
 }
+
+func TestParseNullValues(t *testing.T) {
+	rc := rawCoin{
+		ID:               "91",
+		Symbol:           "CLUB",
+		Name:             "ClubCoin",
+		NameID:           "clubcoin",
+		Rank:             2644,
+		PriceUSD:         "0.020469",
+		PercentChange24h: "-1.25",
+		PercentChange1h:  "-0.14",
+		PercentChange7d:  "-14.12",
+		MarketCapUSD:     "0?",
+		Volume24:         "0?",
+		Volume24Native:   "0?",
+		CSupply:          "0?",
+		PriceBTC:         "0.000002",
+		TSupply:          "100741127",
+		MSupply:          "160000000",
+	}
+
+	c, err := parse(rc)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if c.ID != 91 ||
+		c.Symbol != "CLUB" ||
+		c.Name != "ClubCoin" ||
+		c.NameID != "clubcoin" ||
+		c.Rank != 2644 ||
+		c.PriceUSD != 0.020469 ||
+		c.PercentChange24h != -1.25 ||
+		c.PercentChange1h != -0.14 ||
+		c.PercentChange7d != -14.12 ||
+		c.MarketCapUSD != 0 ||
+		c.Volume24 != 0 ||
+		c.Volume24Native != 0 ||
+		c.CSupply != 0 ||
+		c.PriceBTC != 0.000002 ||
+		c.TSupply != 100741127 ||
+		c.MSupply != 160000000 {
+		t.Fatal("Unexpected values received")
+	}
+}
